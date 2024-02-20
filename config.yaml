@@ -1,0 +1,4 @@
+rank: 1
+alpha: 1
+device: "cpu"
+original_weight_file: "original_weights.json"
