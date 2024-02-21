@@ -49,22 +49,25 @@ def enable_disable_lora(model:nn.Module|nn.ModuleDict|nn.ModuleList, model_layer
     if model_layers is None:
         model_layers = [
             layer for layer in model.modules() if isinstance(layer, nn.Linear)]
+    get_lora_stats(model_layers)
     for layer in model_layers:
         layer.parametrizations["weight"][0].enabled = enabled
 
 
-def main(model: nn.Module, model_layer: list | None = None):
+def main_param(model: nn.Module, model_layer: list | None = None):
     if model_layer is None:
         model_layer = [
-            layer for layer in model if isinstance(layer, nn.Linear)]
+            layer for layer in model.modules() if isinstance(layer, nn.Linear)]
     # Save original weights
-    save_weights(model, config.original_weight_file)
+    # save_weights(model, config['original_weight_file'])
     # Parametrize layers
     for layer in model_layer:
         parameterize.register_parametrization(
             layer,
             "weight",
             linear_layer_parametrize(
-                layer, device=config.device, rank=config.rank, lora_alpha=config.alpha
+                layer, device=config['device'], rank=config['rank'], lora_alpha=config['alpha']
             ),
         )
+    
+    return model

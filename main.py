@@ -1,4 +1,5 @@
-from main_lora import enable_disable_lora
+import argparse
+from main_lora import enable_disable_lora, main_param
 from test import test
 from train import train
 from data import train_dataloader
@@ -7,14 +8,12 @@ import torch
 
 
 if __name__ == '__main__':
-    net = heavynetwork().to(device)
-    train(train_dataloader, net, device, epochs=1, total_iterations_limit=100)
-    torch.save(net, 'model.pth')
-    net = torch.load('model.pth')
-    enable_disable_lora(net, None, enabled=True)
-    test(net)
-    print('Testing finished')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_path', type=str, help='Path to the model file')
+    args = parser.parse_args()
 
-    enable_disable_lora(net, None, enabled=False)
+    net = torch.load(args.model_path)
+    net = main_param(net)
+    enable_disable_lora(net, None, enabled=True)
     test(net)
     print('Testing finished')
